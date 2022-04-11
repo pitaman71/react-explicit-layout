@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "esnext",
+    "declaration": true,
+    "outDir": "./lib",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src"
+  ]
+}
