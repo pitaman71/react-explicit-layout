@@ -9,7 +9,7 @@ const ReactContext = React.createContext<{
     }
 }>({});
 
-export function Frame(props: {
+export function Fill(props: {
     children: JSX.Element[]|JSX.Element|string|null
 }) {
     const [ height, setHeight ] = React.useState(0);
@@ -17,7 +17,6 @@ export function Frame(props: {
     const mainDiv = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
-        let subscription;
         if(mainDiv.current) {
             setHeight(mainDiv.current.clientHeight);
             setWidth(mainDiv.current.clientWidth);
@@ -30,7 +29,7 @@ export function Frame(props: {
                 height, width
             }
         }}>
-            <div ref={mainDiv} style={ { 
+            <div ref={mainDiv} className="explicit-layout-fill" style={ { 
                 position: 'relative', 
                 height: '100%',
                 width: '100%'
@@ -51,7 +50,7 @@ export function Layer(props: {
             left: 0,
             height: '100%',
             width: '100%'
-        }}>
+        }} className="explicit-layout-layer" >
             { props.children }
         </div>
     )
@@ -71,6 +70,7 @@ export function Partition(props: {
         const right = context.framePixels.width * props.right;
         const bottom = context.framePixels.height * props.bottom;
         const left = context.framePixels.width * props.left;
+        console.log(`DEBUG: react-explicit-layout/Partition framePixels=${JSON.stringify(context.framePixels)}`);
         return (
             <div style={ { 
                 position: 'absolute', 
@@ -80,7 +80,7 @@ export function Partition(props: {
                 right,
                 height: bottom - top,
                 width: right - left
-            }}>
+            }} className="explicit-layout-partition" >
                 <ReactContext.Provider value={{
                     framePixels: {
                         height: bottom - top, width: right - left
@@ -100,17 +100,48 @@ export function Partition(props: {
     )
 }
 
-export function Center(props: {
-    children: JSX.Element[]|JSX.Element|string|null
-}) {
-    return (
-        <div style={{ display: 'flex', alignItems: 'center', 'justifyContent': 'center', width: '100%', height: '100%' }}>
+export const Center = {
+    Both: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
+        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', width: '100%', maxHeight: 'fit-content' }}>
+                <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content' }}>
+                        { props.children }
+                    </div>
+                </div>
+            </div>
+        </div>
+    ),
+    Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
+        <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
             <div style={{ display: 'flex', flex: '0 0 auto' }}>
                 { props.children }
             </div>
         </div>
-    )
+    ),
+    Vertical: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
+        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content' }}>
+                { props.children }
+            </div>
+        </div>
+    ),
 }
+
+export const Stack = {
+    North: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'row', alignContent: 'center' }}>{props.children}</div>,
+    South: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'row-reverse', alignContent: 'center' }}>{props.children}</div>,
+    East: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-east" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column-reverse', justifyContent: 'center' }}>{props.children}</div>,
+    West: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-west" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>{props.children}</div>,
+    Fixed: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '0 0 auto' }}>{props.children}</div>,
+    Stretch: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
+        <div className="explicit-layout-stack-stretch" style={{ display: 'flex', flex: '1 0 auto' }}>{props.children}</div>
+};
 
 /* ReactDOM.render(
     <React.StrictMode>
