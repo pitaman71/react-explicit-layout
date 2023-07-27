@@ -25,14 +25,14 @@ export function Fill(props: {
         if(outer.current) {
             if(props.maxHeight) {
                 setHeight(Math.min(props.maxHeight, outer.current.clientHeight));
-                setTop((outer.current.clientHeight - props.maxHeight) / 2);
+                setTop(props.maxHeight > outer.current.clientHeight ? 0 : (outer.current.clientHeight - props.maxHeight) / 2);
             } else {
                 setTop(0);
                 setHeight(outer.current.clientHeight);
             }
             if(props.maxWidth) {
                 setWidth(Math.min(props.maxWidth, outer.current.clientWidth));
-                setLeft((outer.current.clientWidth - props.maxWidth) / 2);
+                setLeft(props.maxWidth > outer.current.clientWidth ? 0 : (outer.current.clientWidth - props.maxWidth) / 2);
             } else {
                 setLeft(0);
                 setWidth(outer.current.clientWidth);
