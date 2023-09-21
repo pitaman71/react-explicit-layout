@@ -92,7 +92,6 @@ export function Partition(props: {
         const right = context.framePixels.width * props.right;
         const bottom = context.framePixels.height * props.bottom;
         const left = context.framePixels.width * props.left;
-        console.log(`DEBUG: react-explicit-layout/Partition framePixels=${JSON.stringify(context.framePixels)}`);
         return (
             <div style={ { 
                 position: 'absolute', 
