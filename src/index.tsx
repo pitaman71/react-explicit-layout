@@ -135,12 +135,12 @@ export const Center = {
     ),
     Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
         <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: '100%' }}>
                 { props.children }
             </div>
         </div>
     ),
-    Vertical: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
+    Vertical: (props: { clip?: boolean, children: JSX.Element[]|JSX.Element|string|null }) => (
         <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
             <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content' }}>
                 { props.children }
