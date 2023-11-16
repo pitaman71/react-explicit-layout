@@ -83,6 +83,7 @@ export function Partition(props: {
     bottom: number,
     left: number,
     right: number,
+    scroll?: { horizontal: boolean, vertical: boolean },
     children: JSX.Element[]|JSX.Element|string|null
 }) {
     const context = React.useContext(ReactContext);
@@ -100,7 +101,9 @@ export function Partition(props: {
                 left,
                 right,
                 height: bottom - top,
-                width: right - left
+                width: right - left,
+                overflowX: !!props.scroll?.horizontal ? 'hidden' : 'scroll',
+                overflowY: !!props.scroll?.horizontal ? 'hidden' : 'scroll'
             }} className="explicit-layout-partition" >
                 <ReactContext.Provider value={{
                     framePixels: {
@@ -150,13 +153,13 @@ export const Center = {
 }
 
 export const Stack = {
-    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center' }}>{props.children}</div>,
-    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'center' }}>{props.children}</div>,
     East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-east" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'center' }}>{props.children}</div>,
+        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center' }}>{props.children}</div>,
     West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
+        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'center' }}>{props.children}</div>,
+    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
+        <div className="explicit-layout-stack-east" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'center' }}>{props.children}</div>,
+    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
         <div className="explicit-layout-stack-west" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'column', justifyContent: 'center' }}>{props.children}</div>,
     Fixed: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
         <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '0 0 auto' }}>{props.children}</div>,
