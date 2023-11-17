@@ -102,8 +102,8 @@ export function Partition(props: {
                 right,
                 height: bottom - top,
                 width: right - left,
-                overflowX: !!props.scroll?.horizontal ? 'hidden' : 'scroll',
-                overflowY: !!props.scroll?.horizontal ? 'hidden' : 'scroll'
+                overflowX: !!props.scroll?.horizontal ? 'auto' : 'hidden',
+                overflowY: !!props.scroll?.vertical ? 'auto' : 'hidden'
             }} className="explicit-layout-partition" >
                 <ReactContext.Provider value={{
                     framePixels: {
