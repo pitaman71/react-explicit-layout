@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-//import './index.css';
 
 const ReactContext = React.createContext<{
     framePixels?: {
@@ -20,6 +18,7 @@ export function WithDimensions(props: {
 export function Fill(props: {
     maxHeight?: number,
     maxWidth?: number,
+    style?: React.CSSProperties,
     children: JSX.Element[]|JSX.Element|string|null
 }) {
     const [ height, setHeight ] = React.useState(0);
@@ -61,7 +60,8 @@ export function Fill(props: {
             }}>
                 <div ref={inner} style={ { 
                     position: 'relative', 
-                    height, width, left, top
+                    height, width, left, top,
+                    ... props.style
                 }}>
                     { props.children }
                 </div>
@@ -161,14 +161,14 @@ export const Center = {
 }
 
 export const Stack = {
-    East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-east" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center' }}>{props.children}</div>,
-    West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-west" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end' }}>{props.children}</div>,
-    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'end' }}>{props.children}</div>,
-    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number}) => 
-        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'column',  }}>{props.children}</div>,
+    East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-east" style={{ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center', ...props.style }}>{props.children}</div>,
+    West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-west" style={{ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end', ...props.style }}>{props.children}</div>,
+    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', display: 'flex', gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'end', ...props.style }}>{props.children}</div>,
+    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', display: 'flex', gap: props.gap, flexDirection: 'column', ...props.style }}>{props.children}</div>,
     Fixed: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
         <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '0 0 auto' }}>{props.children}</div>,
     Stretch: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
