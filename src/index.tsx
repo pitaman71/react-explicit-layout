@@ -92,6 +92,7 @@ export function Partition(props: {
     left: number,
     right: number,
     scroll?: { horizontal: boolean, vertical: boolean },
+    style?: React.CSSProperties,
     children: JSX.Element[]|JSX.Element|string|null
 }) {
     const context = React.useContext(ReactContext);
@@ -103,6 +104,7 @@ export function Partition(props: {
         const left = context.framePixels.width * props.left;
         return (
             <div style={ { 
+                ... props.style,
                 position: 'absolute', 
                 top,
                 bottom,
@@ -162,7 +164,7 @@ export const Center = {
 
 export const Stack = {
     East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-east" style={{ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center', ...props.style }}>{props.children}</div>,
+        <div className="explicit-layout-stack-east" style={Object.assign({ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center' }, props.style)}>{props.children}</div>,
     West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
         <div className="explicit-layout-stack-west" style={{ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end', ...props.style }}>{props.children}</div>,
     North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
