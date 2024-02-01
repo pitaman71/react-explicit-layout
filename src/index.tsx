@@ -1,5 +1,18 @@
 import React from 'react';
 
+function useWindowSize() {
+    const [size, setSize] = React.useState([0, 0]);
+    React.useLayoutEffect(() => {
+      function updateSize() {
+        setSize([window.innerWidth, window.innerHeight]);
+      }
+      window.addEventListener('resize', updateSize);
+      updateSize();
+      return () => window.removeEventListener('resize', updateSize);
+    }, []);
+    return size;
+  }
+  
 const ReactContext = React.createContext<{
     framePixels?: {
         height: number,
@@ -27,23 +40,27 @@ export function Fill(props: {
     const [ left, setLeft ] = React.useState(0);
     const outer = React.useRef<HTMLDivElement>(null);
     const inner = React.useRef<HTMLDivElement>(null);
-
+    
     React.useEffect(() => {
-        if(outer.current) {
-            if(props.maxHeight) {
-                setHeight(Math.min(props.maxHeight, outer.current.clientHeight));
-                setTop(props.maxHeight > outer.current.clientHeight ? 0 : (outer.current.clientHeight - props.maxHeight) / 2);
-            } else {
-                setTop(0);
-                setHeight(outer.current.clientHeight);
-            }
-            if(props.maxWidth) {
-                setWidth(Math.min(props.maxWidth, outer.current.clientWidth));
-                setLeft(props.maxWidth > outer.current.clientWidth ? 0 : (outer.current.clientWidth - props.maxWidth) / 2);
-            } else {
-                setLeft(0);
-                setWidth(outer.current.clientWidth);
-            }
+        const ref = outer.current;
+        if(ref) {
+            const resizeObserver = new ResizeObserver(() => {
+                if(props.maxHeight) {
+                    setHeight(Math.min(props.maxHeight, ref.clientHeight));
+                    setTop(props.maxHeight > ref.clientHeight ? 0 : (ref.clientHeight - props.maxHeight) / 2);
+                } else {
+                    setTop(0);
+                    setHeight(ref.clientHeight);
+                }
+                if(props.maxWidth) {
+                    setWidth(Math.min(props.maxWidth, ref.clientWidth));
+                    setLeft(props.maxWidth > ref.clientWidth ? 0 : (ref.clientWidth - props.maxWidth) / 2);
+                } else {
+                    setLeft(0);
+                    setWidth(ref.clientWidth);
+                }
+            });
+            resizeObserver.observe(ref);
         }
     }, [ outer.current ]);
 
