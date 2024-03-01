@@ -154,9 +154,9 @@ export function Partition(props: {
 export const Center = {
     Both: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
         <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', width: '100%', maxHeight: 'fit-content' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', width: '100%', maxHeight: 'fit-content', alignItems: 'center' }}>
                 <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content' }}>
+                    <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content', justifyContent: 'center' }}>
                         { props.children }
                     </div>
                 </div>
@@ -165,14 +165,14 @@ export const Center = {
     ),
     Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
         <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: '100%' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: '100%', justifyContent: 'center' }}>
                 { props.children }
             </div>
         </div>
     ),
     Vertical: (props: { clip?: boolean, children: JSX.Element[]|JSX.Element|string|null }) => (
         <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content' }}>
+            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content', alignItems: 'center' }}>
                 { props.children }
             </div>
         </div>
