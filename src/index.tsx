@@ -152,44 +152,34 @@ export function Partition(props: {
 }
 
 export const Center = {
-    Both: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
-        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', width: '100%', maxHeight: 'fit-content', alignItems: 'center' }}>
-                <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                    <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content', justifyContent: 'center' }}>
-                        { props.children }
-                    </div>
-                </div>
-            </div>
+    Both: (props: { children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
+        <div className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...props.style }}>
+            { props.children }
         </div>
     ),
-    Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null }) => (
-        <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: '100%', justifyContent: 'center' }}>
-                { props.children }
-            </div>
+    Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
+        <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', ...props.style }}>
+            { props.children }
         </div>
     ),
-    Vertical: (props: { clip?: boolean, children: JSX.Element[]|JSX.Element|string|null }) => (
-        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flex: '0 0 auto', maxWidth: 'fit-content', alignItems: 'center' }}>
-                { props.children }
-            </div>
+    Vertical: (props: { clip?: boolean, children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
+        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', ...props.style }}>
+            { props.children }
         </div>
     ),
 }
 
 export const Stack = {
-    East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-east" style={Object.assign({ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center' }, props.style)}>{props.children}</div>,
-    West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-west" style={{ position: 'relative', height: '100%', display: 'flex', gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end', ...props.style }}>{props.children}</div>,
-    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-north" style={{ position: 'relative', width: '100%', display: 'flex', gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'end', ...props.style }}>{props.children}</div>,
-    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-south" style={{ position: 'relative', width: '100%', display: 'flex', gap: props.gap, flexDirection: 'column', ...props.style }}>{props.children}</div>,
+    East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-east" style={Object.assign({ position: 'relative', flex: !props.fill ? "0 0 auto" : "1", display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center', overflowY: props.scroll ? 'auto' : undefined }, props.style)}>{props.children}</div>,
+    West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-west" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
+    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-north" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'end', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
+    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
+        <div className="explicit-layout-stack-south" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'column', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
     Fixed: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
-        <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '0 0 auto' }}>{props.children}</div>,
+        <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '1 1 auto' }}>{props.children}</div>,
     Stretch: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
         <div className="explicit-layout-stack-stretch" style={{ display: 'flex', flex: '1 0 auto' }}>{props.children}</div>
 };
