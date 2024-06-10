@@ -1,5 +1,7 @@
 import React from 'react';
 
+type DivRef = React.RefObject<HTMLDivElement>;
+
 function useWindowSize() {
     const [size, setSize] = React.useState([0, 0]);
     React.useLayoutEffect(() => {
@@ -28,12 +30,11 @@ export function WithDimensions(props: {
     return props.render(context.framePixels);
 }
 
-export function Fill(props: {
+export function Fill(props: React.PropsWithChildren<{
     maxHeight?: number,
     maxWidth?: number,
-    style?: React.CSSProperties,
-    children: JSX.Element[]|JSX.Element|string|null
-}) {
+    style?: React.CSSProperties
+}>) {
     const [ height, setHeight ] = React.useState(0);
     const [ width, setWidth ] = React.useState(0);
     const [ top, setTop ] = React.useState(0);
@@ -87,9 +88,7 @@ export function Fill(props: {
     )
 }
 
-export function Layer(props: {
-    children: JSX.Element[]|JSX.Element|string|null
-}) {
+export function Layer(props: React.PropsWithChildren<{}>) {
     return (
         <div style={ { 
             position: 'absolute', 
@@ -103,15 +102,14 @@ export function Layer(props: {
     )
 }
 
-export function Partition(props: {
+export function Partition(props: React.PropsWithChildren<{
     top: number,
     bottom: number,
     left: number,
     right: number,
     scroll?: { horizontal: boolean, vertical: boolean },
-    style?: React.CSSProperties,
-    children: JSX.Element[]|JSX.Element|string|null
-}) {
+    style?: React.CSSProperties
+}>) {
     const context = React.useContext(ReactContext);
 
     if(context.framePixels) {
@@ -152,50 +150,150 @@ export function Partition(props: {
 }
 
 export const Center = {
-    Both: (props: { children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
-        <div className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...props.style }}>
+    Both: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
+        <div id={props.id} ref={props.divRef} className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...props.style }}>
             { props.children }
         </div>
     ),
-    Horizontal: (props: { children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
-        <div className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', ...props.style }}>
+    Horizontal: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
+        <div id={props.id} ref={props.divRef} className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', ...props.style }}>
             { props.children }
         </div>
     ),
-    Vertical: (props: { clip?: boolean, children: JSX.Element[]|JSX.Element|string|null, style?: React.CSSProperties }) => (
-        <div className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', ...props.style }}>
+    Vertical: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, clip?: boolean, style?: React.CSSProperties }>) => (
+        <div id={props.id} ref={props.divRef} className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', ...props.style }}>
             { props.children }
         </div>
     ),
 }
 
-export const Stack = {
-    East: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-east" style={Object.assign({ position: 'relative', flex: !props.fill ? "0 0 auto" : "1", display: 'flex', gap: props.gap, flexDirection: 'row', alignContent: 'center', overflowY: props.scroll ? 'auto' : undefined }, props.style)}>{props.children}</div>,
-    West: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-west" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'row-reverse', alignContent: 'end', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
-    North: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-north" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'column-reverse', justifyContent: 'end', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
-    South: (props: {children: JSX.Element[]|JSX.Element|string|null, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}) => 
-        <div className="explicit-layout-stack-south" style={{ position: 'relative', display: 'flex', flex: !props.fill ? "0 0 auto" : "1", gap: props.gap, flexDirection: 'column', overflowY: props.scroll ? 'auto' : undefined, ...props.style }}>{props.children}</div>,
-    Fixed: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
-        <div className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '1 1 auto' }}>{props.children}</div>,
-    Stretch: (props: {children: JSX.Element[]|JSX.Element|string|null}) => 
-        <div className="explicit-layout-stack-stretch" style={{ display: 'flex', flex: '1 0 auto' }}>{props.children}</div>
-};
+function _makeGridTemplate(count?: number) {
+    if(count === undefined) return undefined;
+    let result = '';
+    for(let index = 0; index < count;++index) {
+        if(result !== '')
+            result += ' ';
+        result += '1fr';
+    }
+    return result;
+}
 
-/* ReactDOM.render(
-    <React.StrictMode>
-      <Frame>
-          <Layer>
-              <Partition top={0} bottom={0.10} left={0.25} right={0.75}>
-                  <Center>
-                      TOP 10% CENTER 50%
-                  </Center>
-              </Partition>
-          </Layer>
-      </Frame>
-    </React.StrictMode>,
-    document.getElementById('root')
-  );
-   */
+function Scrollable(props: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & {
+    divRef?: DivRef
+}>) {
+    const scrollRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(()=> {
+        if(props.id && window.history.state?.scroll && window.history.state?.scroll[props.id]) {
+            const ref = props.divRef?.current || scrollRef.current;
+            const pos = window.history.state?.scroll[props.id];
+            if(ref && ref.scrollHeight > pos) {
+                ref.scrollTop = pos;
+                window.history.replaceState({
+                    ...window.history.state,
+                    scroll: {
+                        ... window.history.state.scroll,
+                        [props.id]: undefined
+                    }
+                }, '');
+            }
+        }
+    }, [ props.children, props.divRef?.current?.scrollHeight, scrollRef.current?.scrollHeight ])
+    return <div {...props} ref={props.divRef || scrollRef} onScroll={event => {
+        if(props.id) window.history.replaceState({
+            ...window.history.state,
+            scroll: {
+                ... window.history.state.scroll,
+                [props.id]: (event.target as HTMLElement).scrollTop
+            }
+        }, '');
+    }} style={{
+        position: 'relative',
+        ...props.style
+    }}>{props.children}</div>
+}
+
+export const Grid = {
+    Vertical: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+        return <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-grid-vert" style={{ 
+            width: '100%', 
+            height: '100%',
+            display: props.shape.rows || props.shape.columns ? 'grid' : 'inline-block',
+            gridAutoFlow: props.shape.rows || props.shape.columns ? 'column' : undefined,
+            gridTemplateRows: _makeGridTemplate(props.shape.rows),
+            gridTemplateColumns: _makeGridTemplate(props.shape.columns),
+            overflowX: 'hidden',
+            overflowY: props.scroll === true ? 'auto' : 'hidden',
+            ...props.style 
+        }}>{props.children}</Scrollable>
+    },
+    Horizontal: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+        return <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-grid-horiz" style={{ 
+            width: '100%', 
+            height: '100%',
+            display: props.shape.rows || props.shape.columns ? 'grid' : 'inline-block',
+            gridAutoFlow: props.shape.rows || props.shape.columns ? 'row' : undefined,
+            gridTemplateRows: _makeGridTemplate(props.shape.rows),
+            gridTemplateColumns: _makeGridTemplate(props.shape.columns),
+            overflowX: props.scroll === true ? 'auto' : 'hidden',
+            overflowY: 'hidden',
+            ...props.style 
+        }}>{props.children}</Scrollable>
+    }
+};
+    
+export const Stack = {
+    East: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-east" style={{ 
+            maxHeight: '100%',
+            maxWidth: '100%', 
+            display: 'flex', 
+            flex: !props.fill ? "0 0 auto" : "1", 
+            overflowX: props.scroll ? 'auto' : undefined , 
+            gap: props.gap, 
+            flexDirection: 'row', 
+            alignContent: 'center', 
+            ...props.style 
+        }}>{props.children}</Scrollable>,
+    West: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef}className="explicit-layout-stack-west" style={{ 
+            maxHeight: '100%',
+            maxWidth: '100%', 
+            position: 'relative', 
+            display: 'flex', 
+            flex: !props.fill ? "0 0 auto" : "1", 
+            overflowX: props.scroll ? 'auto' : undefined, 
+            gap: props.gap, 
+            flexDirection: 'row-reverse', 
+            alignContent: 'end', 
+            ...props.style 
+        }}>{props.children}</Scrollable>,
+    North: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-north" style={{ 
+            maxHeight: '100%',
+            maxWidth: '100%', 
+            position: 'relative', 
+            display: 'flex', 
+            flex: !props.fill ? "0 0 auto" : "1", 
+            overflowY: props.scroll ? 'auto' : undefined, 
+            gap: props.gap, 
+            flexDirection: 'column-reverse', 
+            justifyContent: 'end', 
+            ...props.style 
+        }}>{props.children}</Scrollable>,
+    South: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-south" style={{ 
+            maxHeight: '100%',
+            maxWidth: '100%', 
+            position: 'relative', 
+            display: 'flex', 
+            flex: !props.fill ? "0 0 auto" : "1", 
+            overflowY: props.scroll ? 'auto' : undefined, 
+            gap: props.gap, 
+            flexDirection: 'column', 
+            ...props.style 
+    }}>{props.children}</Scrollable>,
+    Fixed: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef }>) => 
+        <div id={props.id} ref={props.divRef} className="explicit-layout-stack-fixed" style={{ display: 'flex', flex: '1 1 auto' }}>{props.children}</div>,
+    Stretch: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef }>) => 
+        <div id={props.id} ref={props.divRef} className="explicit-layout-stack-stretch" style={{ display: 'flex', flex: '1 0 auto' }}>{props.children}</div>
+};
