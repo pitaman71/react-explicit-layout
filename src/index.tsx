@@ -151,12 +151,12 @@ export function Partition(props: React.PropsWithChildren<{
 
 export const Center = {
     Both: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
-        <div id={props.id} ref={props.divRef} className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...props.style }}>
+        <div id={props.id} ref={props.divRef} className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textWrap: 'balance', ...props.style }}>
             { props.children }
         </div>
     ),
     Horizontal: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
-        <div id={props.id} ref={props.divRef} className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', ...props.style }}>
+        <div id={props.id} ref={props.divRef} className="explicit-layout-center-horiz" style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', textWrap: 'balance', ...props.style }}>
             { props.children }
         </div>
     ),
