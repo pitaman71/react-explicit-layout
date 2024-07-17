@@ -45,7 +45,10 @@ export function Fill(props: React.PropsWithChildren<{
     React.useEffect(() => {
         const ref = outer.current;
         if(ref) {
-            const resizeObserver = new ResizeObserver(() => {
+            const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+                if (!Array.isArray(entries) || !entries.length) {
+                    return;
+                }
                 if(props.maxHeight) {
                     setHeight(Math.min(props.maxHeight, ref.clientHeight));
                     setTop(props.maxHeight > ref.clientHeight ? 0 : (ref.clientHeight - props.maxHeight) / 2);
@@ -62,6 +65,9 @@ export function Fill(props: React.PropsWithChildren<{
                 }
             });
             resizeObserver.observe(ref);
+            return () => {
+                resizeObserver.disconnect();
+            };
         }
     }, [ outer.current ]);
 
