@@ -185,11 +185,12 @@ function _makeGridTemplate(count?: number) {
 }
 
 function Scrollable(props: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement> & {
-    divRef?: DivRef
+    divRef?: DivRef,
+    restoreScroll?: boolean
 }>) {
     const scrollRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(()=> {
-        if(props.id && window.history.state?.scroll && window.history.state?.scroll[props.id]) {
+        if(props.id && props.restoreScroll !== false && window.history.state?.scroll && window.history.state?.scroll[props.id]) {
             const ref = props.divRef?.current || scrollRef.current;
             const pos = window.history.state?.scroll[props.id];
             if(ref && ref.scrollHeight > pos) {
@@ -214,13 +215,14 @@ function Scrollable(props: React.PropsWithChildren<React.HTMLAttributes<HTMLDivE
         }, '');
     }} style={{
         position: 'relative',
+        overflowAnchor: 'none',
         ...props.style
     }}>{props.children}</div>
 }
 
 export const Grid = {
-    Vertical: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
-        return <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-grid-vert" style={{ 
+    Vertical: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+        return <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-grid-vert" style={{ 
             width: '100%', 
             height: '100%',
             display: props.shape.rows || props.shape.columns ? 'grid' : 'inline-block',
@@ -232,8 +234,8 @@ export const Grid = {
             ...props.style 
         }}>{props.children}</Scrollable>
     },
-    Horizontal: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
-        return <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-grid-horiz" style={{ 
+    Horizontal: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+        return <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-grid-horiz" style={{ 
             width: '100%', 
             height: '100%',
             display: props.shape.rows || props.shape.columns ? 'grid' : 'inline-block',
@@ -248,8 +250,8 @@ export const Grid = {
 };
     
 export const Stack = {
-    East: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
-        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-east" style={{ 
+    East: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-stack-east" style={{ 
             maxHeight: '100%',
             maxWidth: '100%', 
             display: 'flex', 
@@ -260,8 +262,8 @@ export const Stack = {
             alignContent: 'center', 
             ...props.style 
         }}>{props.children}</Scrollable>,
-    West: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
-        <Scrollable id={props.id} divRef={props.divRef}className="explicit-layout-stack-west" style={{ 
+    West: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-stack-west" style={{ 
             maxHeight: '100%',
             maxWidth: '100%', 
             position: 'relative', 
@@ -273,8 +275,8 @@ export const Stack = {
             alignContent: 'end', 
             ...props.style 
         }}>{props.children}</Scrollable>,
-    North: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
-        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-north" style={{ 
+    North: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-stack-north" style={{ 
             maxHeight: '100%',
             maxWidth: '100%', 
             position: 'relative', 
@@ -286,8 +288,8 @@ export const Stack = {
             justifyContent: 'end', 
             ...props.style 
         }}>{props.children}</Scrollable>,
-    South: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
-        <Scrollable id={props.id} divRef={props.divRef} className="explicit-layout-stack-south" style={{ 
+    South: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+        <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-stack-south" style={{ 
             maxHeight: '100%',
             maxWidth: '100%', 
             position: 'relative', 
