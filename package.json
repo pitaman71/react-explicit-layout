@@ -1,11 +1,10 @@
 {
   "name": "@pitaman71/react-explicit-layout",
-  "version": "0.1.76",
+  "version": "0.2.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*",
-    "src/**/*"
+    "lib/**/*"
   ],
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
@@ -16,7 +15,9 @@
     "@types/react": "^18.2.75",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.1.0",
-    "typescript": "^5.3.3"
+    "typedoc": "^0.26.7",
+    "typescript": "^5.3.3",
+    "typescript-upload-docs": "^1.0.16"
   },
   "peerDependencies": {
     "react": "^18.2.0",
@@ -24,6 +25,9 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
+    "clean": "rm -rf lib docs node_modules package-lock.json",
+    "docs:build": "typedoc src/index.tsx",
+    "docs:upload": "tsx node_modules/typescript-upload-docs/lib/index",
     "build": "tsc",
     "start": "tsc -w",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",

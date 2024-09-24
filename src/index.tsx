@@ -1,19 +1,6 @@
 import React from 'react';
 
 type DivRef = React.RefObject<HTMLDivElement>;
-
-function useWindowSize() {
-    const [size, setSize] = React.useState([0, 0]);
-    React.useLayoutEffect(() => {
-      function updateSize() {
-        setSize([window.innerWidth, window.innerHeight]);
-      }
-      window.addEventListener('resize', updateSize);
-      updateSize();
-      return () => window.removeEventListener('resize', updateSize);
-    }, []);
-    return size;
-  }
   
 const ReactContext = React.createContext<{
     framePixels?: {
@@ -22,6 +9,11 @@ const ReactContext = React.createContext<{
     }
 }>({});
 
+/**
+ * Returns the width and height of the most recent `Fill` ancestor.
+ * @deprecated
+ * @param props 
+ */
 export function WithDimensions(props: {
     render: (framePixels: { height: number, width: number }) => JSX.Element;
 }) {
@@ -30,11 +22,23 @@ export function WithDimensions(props: {
     return props.render(context.framePixels);
 }
 
-export function Fill(props: React.PropsWithChildren<{
+/**
+ * @property maxHeight maximum height of div in pixels
+ * @property maxWidth maximum width of div in pixels
+ */
+export interface FillProps {
     maxHeight?: number,
     maxWidth?: number,
     style?: React.CSSProperties
-}>) {
+};
+
+/**
+ * Fills all available space in the parent div.
+ * Captures the resolved width and height in `ReactContext` for use by descendants.
+ * @deprecated
+ * @param props React component properties
+ */
+export function Fill(props: React.PropsWithChildren<FillProps>) {
     const [ height, setHeight ] = React.useState(0);
     const [ width, setWidth ] = React.useState(0);
     const [ top, setTop ] = React.useState(0);
@@ -108,14 +112,30 @@ export function Layer(props: React.PropsWithChildren<{}>) {
     )
 }
 
-export function Partition(props: React.PropsWithChildren<{
+/**
+ * @property top offset of the top boundary inside the parent div as a fraction [0.0 - 1.0] of the parent's vertical extent
+ * @property bottom offset of the bottom boundary inside the parent div as a fraction [0.0 - 1.0] of the parent's vertical extent
+ * @property left offset of the left boundary inside the parent div as a fraction [0.0 - 1.0] of the parent's horizontal extent
+ * @property right offset of the right boundary inside the parent div as a fraction [0.0 - 1.0] of the parent's horizontal extent
+ * @property scroll.horizontal enable horizontal scrolling inside of this div
+ * @property scroll.vertical enable horizontal scrolling inside of this div
+ * @property style optional CSS properties to override the style of the root div
+ */
+export interface PartitionProps {
     top: number,
     bottom: number,
     left: number,
     right: number,
     scroll?: { horizontal: boolean, vertical: boolean },
     style?: React.CSSProperties
-}>) {
+};
+
+/**
+ * Caller can wrap div children inside this component and specify
+ * the boundaries in relative fractions.
+ * @param props React component properties
+ */
+export function Partition(props: React.PropsWithChildren<PartitionProps>) {
     const context = React.useContext(ReactContext);
 
     if(context.framePixels) {
@@ -155,8 +175,22 @@ export function Partition(props: React.PropsWithChildren<{
     )
 }
 
+/**
+ * @property id string identifier for this element. Should be unique across the entire DOM.
+ * @property divRef React reference which will be assigned to the root div
+ * @property style optional CSS properties to override the style of the root div
+ */
+export interface CenterProps { 
+    id?: string, 
+    divRef?: DivRef, 
+    style?: React.CSSProperties 
+};
+
+/**
+ * Centers the child elements within the parent div in horizontal, vertical, or both dimensions
+ */
 export const Center = {
-    Both: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
+    Both: (props: React.PropsWithChildren<CenterProps>) => (
         <div id={props.id} ref={props.divRef} className="explicit-layout-center-both" style={{ position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textWrap: 'balance', ...props.style }}>
             { props.children }
         </div>
@@ -166,7 +200,7 @@ export const Center = {
             { props.children }
         </div>
     ),
-    Vertical: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, clip?: boolean, style?: React.CSSProperties }>) => (
+    Vertical: (props: React.PropsWithChildren<{ id?: string, divRef?: DivRef, style?: React.CSSProperties }>) => (
         <div id={props.id} ref={props.divRef} className="explicit-layout-center-vert" style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', ...props.style }}>
             { props.children }
         </div>
@@ -220,8 +254,20 @@ function Scrollable(props: React.PropsWithChildren<React.HTMLAttributes<HTMLDivE
     }}>{props.children}</div>
 }
 
+export interface GridProps {
+    id?: string, 
+    divRef?: DivRef, 
+    restoreScroll?: boolean, 
+    shape: { rows?: number, columns?: number }, 
+    scroll?: boolean, 
+    style?: React.CSSProperties}
+
+/**
+ * Arrange children using CSS grid layout, with either Vertical or Horizontal as the major dimension.
+ * @param props React component props
+ */
 export const Grid = {
-    Vertical: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+    Vertical: (props: React.PropsWithChildren<GridProps>) => {
         return <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-grid-vert" style={{ 
             width: '100%', 
             height: '100%',
@@ -234,7 +280,7 @@ export const Grid = {
             ...props.style 
         }}>{props.children}</Scrollable>
     },
-    Horizontal: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, shape: { rows?: number, columns?: number }, scroll?: boolean, style?: React.CSSProperties}>) => {
+    Horizontal: (props: React.PropsWithChildren<GridProps>) => {
         return <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-grid-horiz" style={{ 
             width: '100%', 
             height: '100%',
@@ -248,9 +294,32 @@ export const Grid = {
         }}>{props.children}</Scrollable>
     }
 };
-    
+
+/**
+ * @property id string identifier for this element. Should be unique across the entire DOM.
+ * @property divRef React reference which will be assigned to the root div
+ * @property restoreScroll if true or undefined, this component will explicitly save and restore the scroll position in React history
+ * @property scroll if true, permits Vertical or Horizontal scrolling (never both)
+ * @property gap number of pixels of extra space between child elements along the primary direction. Defaults to zero.
+ * @property fill if present, fills all remaining space in the parent div
+ * @property style optional CSS properties to override the style of the root div
+ */
+export interface StackProps {
+    id?: string, 
+    divRef?: DivRef, 
+    restoreScroll?: boolean, 
+    gap?: number, 
+    fill?: boolean, 
+    scroll?: boolean, 
+    style?: React.CSSProperties
+}
+
+/**
+ * Stacks child elements along a primary cartesian direction, which may have varying sizes in both the primary and secondary directions
+ * @param props React component properties
+*/
 export const Stack = {
-    East: (props: React.PropsWithChildren<{id?: string, divRef?: DivRef, restoreScroll?: boolean, gap?: number, fill?: boolean, scroll?: boolean, style?: React.CSSProperties}>) => 
+    East: (props: React.PropsWithChildren<StackProps>) => 
         <Scrollable id={props.id} divRef={props.divRef} restoreScroll={props.restoreScroll} className="explicit-layout-stack-east" style={{ 
             maxHeight: '100%',
             maxWidth: '100%', 
